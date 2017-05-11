@@ -17,8 +17,9 @@ namespace MVCHomeWorkF.Controllers
         // GET: 客戶聯絡人
         public ActionResult Index()
         {
-            var 客戶聯絡人 = db.客戶聯絡人.Include(客 => 客.客戶資料);
-            return View(客戶聯絡人.ToList());
+            var 客戶聯絡人 = db.客戶聯絡人.Include(客 => 客.客戶資料).AsQueryable();
+            客戶聯絡人 = 客戶聯絡人.Where(a => a.客戶資料.IsDeleted == false);
+            return View(客戶聯絡人);
         }
 
         // GET: 客戶聯絡人/Details/5
@@ -39,7 +40,7 @@ namespace MVCHomeWorkF.Controllers
         // GET: 客戶聯絡人/Create
         public ActionResult Create()
         {
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱");
+            ViewBag.客戶Id = new SelectList(db.客戶資料.Where(q => q.IsDeleted == false), "Id", "客戶名稱");
             return View();
         }
 
@@ -57,7 +58,7 @@ namespace MVCHomeWorkF.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱", 客戶聯絡人.客戶Id);
+            ViewBag.客戶Id = new SelectList(db.客戶資料.Where(q => q.IsDeleted == false), "Id", "客戶名稱", 客戶聯絡人.客戶Id);
             return View(客戶聯絡人);
         }
 
@@ -73,7 +74,7 @@ namespace MVCHomeWorkF.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱", 客戶聯絡人.客戶Id);
+            ViewBag.客戶Id = new SelectList(db.客戶資料.Where(q => q.IsDeleted == false), "Id", "客戶名稱", 客戶聯絡人.客戶Id);
             return View(客戶聯絡人);
         }
 
@@ -90,7 +91,7 @@ namespace MVCHomeWorkF.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱", 客戶聯絡人.客戶Id);
+            ViewBag.客戶Id = new SelectList(db.客戶資料.Where(q => q.IsDeleted == false), "Id", "客戶名稱", 客戶聯絡人.客戶Id);
             return View(客戶聯絡人);
         }
 

@@ -17,7 +17,8 @@ namespace MVCHomeWorkF.Controllers
         // GET: 客戶資料
         public ActionResult Index()
         {
-            return View(db.客戶資料.ToList());
+            var list = db.客戶資料.Where(q => q.IsDeleted == false).AsQueryable();
+            return View(list);
         }
 
         // GET: 客戶資料/Details/5
@@ -46,7 +47,7 @@ namespace MVCHomeWorkF.Controllers
         // 詳細資訊，請參閱 http://go.microsoft.com/fwlink/?LinkId=317598。
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,客戶名稱,統一編號,電話,傳真,地址,Email")] 客戶資料 客戶資料)
+        public ActionResult Create([Bind(Include = "客戶名稱,統一編號,電話,傳真,地址,Email")] 客戶資料 客戶資料)
         {
             if (ModelState.IsValid)
             {
@@ -110,7 +111,7 @@ namespace MVCHomeWorkF.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             客戶資料 客戶資料 = db.客戶資料.Find(id);
-            db.客戶資料.Remove(客戶資料);
+            客戶資料.IsDeleted = true;
             db.SaveChanges();
             return RedirectToAction("Index");
         }
