@@ -14,6 +14,18 @@ namespace MVCHomeWorkF.Controllers
     {
         private 客戶資料Entities db = new 客戶資料Entities();
 
+        [HttpPost]
+        public ActionResult Index(string strSearch)
+        {
+            var list = db.客戶資料.Where(q => q.IsDeleted == false).AsQueryable();
+            if (!string.IsNullOrEmpty(strSearch))
+            {
+                list = list.Where(a => a.客戶名稱.Contains(strSearch));
+            }
+
+            return View(list);
+        }
+
         // GET: 客戶資料
         public ActionResult Index()
         {
