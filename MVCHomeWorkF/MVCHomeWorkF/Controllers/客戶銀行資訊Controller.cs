@@ -10,15 +10,13 @@ using MVCHomeWorkF.Models;
 
 namespace MVCHomeWorkF.Controllers
 {
-    public class 客戶銀行資訊Controller : Controller
+    public class 客戶銀行資訊Controller : BaseController
     {
-        private 客戶資料Entities db = new 客戶資料Entities();
-
         // GET: 客戶銀行資訊
         public ActionResult Index()
         {
-            var 客戶銀行資訊 = db.客戶銀行資訊.Include(客 => 客.客戶資料);
-            return View(客戶銀行資訊.ToList());
+            var 客戶銀行資訊 = 客戶銀行資訊Repository.get客戶銀行資訊List();
+            return View(客戶銀行資訊);
         }
 
         // GET: 客戶銀行資訊/Details/5
@@ -28,7 +26,7 @@ namespace MVCHomeWorkF.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            客戶銀行資訊 客戶銀行資訊 = db.客戶銀行資訊.Find(id);
+            客戶銀行資訊 客戶銀行資訊 = 客戶銀行資訊Repository.Find(id);
             if (客戶銀行資訊 == null)
             {
                 return HttpNotFound();
@@ -39,7 +37,7 @@ namespace MVCHomeWorkF.Controllers
         // GET: 客戶銀行資訊/Create
         public ActionResult Create()
         {
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱");
+            ViewBag.客戶Id = new SelectList(客戶資料Repository.get客戶資料AllList(), "Id", "客戶名稱");
             return View();
         }
 
@@ -52,12 +50,12 @@ namespace MVCHomeWorkF.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.客戶銀行資訊.Add(客戶銀行資訊);
-                db.SaveChanges();
+                客戶銀行資訊Repository.Add(客戶銀行資訊);
+                客戶銀行資訊Repository.UnitOfWork.Commit();
                 return RedirectToAction("Index");
             }
 
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱", 客戶銀行資訊.客戶Id);
+            ViewBag.客戶Id = new SelectList(客戶資料Repository.get客戶資料AllList(), "Id", "客戶名稱", 客戶銀行資訊.客戶Id);
             return View(客戶銀行資訊);
         }
 
@@ -68,12 +66,12 @@ namespace MVCHomeWorkF.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            客戶銀行資訊 客戶銀行資訊 = db.客戶銀行資訊.Find(id);
+            客戶銀行資訊 客戶銀行資訊 = 客戶銀行資訊Repository.Find(id);
             if (客戶銀行資訊 == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱", 客戶銀行資訊.客戶Id);
+            ViewBag.客戶Id = new SelectList(客戶資料Repository.get客戶資料AllList(), "Id", "客戶名稱", 客戶銀行資訊.客戶Id);
             return View(客戶銀行資訊);
         }
 
@@ -86,11 +84,11 @@ namespace MVCHomeWorkF.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(客戶銀行資訊).State = EntityState.Modified;
-                db.SaveChanges();
+                客戶銀行資訊Repository.Update(客戶銀行資訊);
+                客戶銀行資訊Repository.UnitOfWork.Commit();
                 return RedirectToAction("Index");
             }
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱", 客戶銀行資訊.客戶Id);
+            ViewBag.客戶Id = new SelectList(客戶資料Repository.get客戶資料AllList(), "Id", "客戶名稱", 客戶銀行資訊.客戶Id);
             return View(客戶銀行資訊);
         }
 
@@ -101,7 +99,7 @@ namespace MVCHomeWorkF.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            客戶銀行資訊 客戶銀行資訊 = db.客戶銀行資訊.Find(id);
+            客戶銀行資訊 客戶銀行資訊 = 客戶銀行資訊Repository.Find(id);
             if (客戶銀行資訊 == null)
             {
                 return HttpNotFound();
@@ -114,19 +112,11 @@ namespace MVCHomeWorkF.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            客戶銀行資訊 客戶銀行資訊 = db.客戶銀行資訊.Find(id);
-            db.客戶銀行資訊.Remove(客戶銀行資訊);
-            db.SaveChanges();
+            客戶銀行資訊 客戶銀行資訊 = 客戶銀行資訊Repository.Find(id);
+            客戶銀行資訊Repository.Remove(客戶銀行資訊);
+            客戶銀行資訊Repository.UnitOfWork.Commit();
             return RedirectToAction("Index");
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
     }
 }

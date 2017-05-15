@@ -10,15 +10,13 @@ using MVCHomeWorkF.Models;
 
 namespace MVCHomeWorkF.Controllers
 {
-    public class 客戶聯絡人Controller : Controller
+    public class 客戶聯絡人Controller : BaseController
     {
-        private 客戶資料Entities db = new 客戶資料Entities();
-
         // GET: 客戶聯絡人
         public ActionResult Index()
         {
-            var 客戶聯絡人 = db.客戶聯絡人.Include(客 => 客.客戶資料).AsQueryable();
-            客戶聯絡人 = 客戶聯絡人.Where(a => a.客戶資料.IsDeleted == false);
+            var 客戶聯絡人 = 客戶聯絡人Repository.get客戶聯絡人List();
+
             return View(客戶聯絡人);
         }
 
@@ -29,7 +27,7 @@ namespace MVCHomeWorkF.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            客戶聯絡人 客戶聯絡人 = db.客戶聯絡人.Find(id);
+            客戶聯絡人 客戶聯絡人 = 客戶聯絡人Repository.Find(id);
             if (客戶聯絡人 == null)
             {
                 return HttpNotFound();
@@ -40,7 +38,7 @@ namespace MVCHomeWorkF.Controllers
         // GET: 客戶聯絡人/Create
         public ActionResult Create()
         {
-            ViewBag.客戶Id = new SelectList(db.客戶資料.Where(q => q.IsDeleted == false), "Id", "客戶名稱");
+            ViewBag.客戶Id = new SelectList(客戶資料Repository.get客戶資料AllList(), "Id", "客戶名稱");
             return View();
         }
 
@@ -53,12 +51,12 @@ namespace MVCHomeWorkF.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.客戶聯絡人.Add(客戶聯絡人);
-                db.SaveChanges();
+                客戶聯絡人Repository.Add(客戶聯絡人);
+                客戶聯絡人Repository.UnitOfWork.Commit();
                 return RedirectToAction("Index");
             }
 
-            ViewBag.客戶Id = new SelectList(db.客戶資料.Where(q => q.IsDeleted == false), "Id", "客戶名稱", 客戶聯絡人.客戶Id);
+            ViewBag.客戶Id = new SelectList(客戶資料Repository.get客戶資料AllList(), "Id", "客戶名稱", 客戶聯絡人.客戶Id);
             return View(客戶聯絡人);
         }
 
@@ -69,12 +67,12 @@ namespace MVCHomeWorkF.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            客戶聯絡人 客戶聯絡人 = db.客戶聯絡人.Find(id);
+            客戶聯絡人 客戶聯絡人 = 客戶聯絡人Repository.Find(id);
             if (客戶聯絡人 == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.客戶Id = new SelectList(db.客戶資料.Where(q => q.IsDeleted == false), "Id", "客戶名稱", 客戶聯絡人.客戶Id);
+            ViewBag.客戶Id = new SelectList(客戶資料Repository.get客戶資料AllList(), "Id", "客戶名稱", 客戶聯絡人.客戶Id);
             return View(客戶聯絡人);
         }
 
@@ -87,11 +85,11 @@ namespace MVCHomeWorkF.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(客戶聯絡人).State = EntityState.Modified;
-                db.SaveChanges();
+                客戶聯絡人Repository.Update(客戶聯絡人);
+                客戶聯絡人Repository.UnitOfWork.Commit();
                 return RedirectToAction("Index");
             }
-            ViewBag.客戶Id = new SelectList(db.客戶資料.Where(q => q.IsDeleted == false), "Id", "客戶名稱", 客戶聯絡人.客戶Id);
+            ViewBag.客戶Id = new SelectList(客戶資料Repository.get客戶資料AllList(), "Id", "客戶名稱", 客戶聯絡人.客戶Id);
             return View(客戶聯絡人);
         }
 
@@ -102,7 +100,7 @@ namespace MVCHomeWorkF.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            客戶聯絡人 客戶聯絡人 = db.客戶聯絡人.Find(id);
+            客戶聯絡人 客戶聯絡人 = 客戶聯絡人Repository.Find(id);
             if (客戶聯絡人 == null)
             {
                 return HttpNotFound();
@@ -115,19 +113,10 @@ namespace MVCHomeWorkF.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            客戶聯絡人 客戶聯絡人 = db.客戶聯絡人.Find(id);
-            db.客戶聯絡人.Remove(客戶聯絡人);
-            db.SaveChanges();
+            客戶聯絡人 客戶聯絡人 = 客戶聯絡人Repository.Find(id);
+            客戶聯絡人Repository.Remove(客戶聯絡人);
+            客戶聯絡人Repository.UnitOfWork.Commit();
             return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }
